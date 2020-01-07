@@ -4,4 +4,5 @@
 
 # JavaDoc
 
+- [JavaDoc 3.2](http://arangodb.github.io/spring-data/javadoc-3_2)
 - [JavaDoc 3.1](http://arangodb.github.io/spring-data/javadoc-3_1)
