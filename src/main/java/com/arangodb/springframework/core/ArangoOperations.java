@@ -22,6 +22,7 @@ package com.arangodb.springframework.core;
 
 import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDB;
+import com.arangodb.DbName;
 import com.arangodb.entity.ArangoDBVersion;
 import com.arangodb.entity.DocumentEntity;
 import com.arangodb.entity.MultiDocumentEntity;
@@ -56,6 +57,8 @@ public interface ArangoOperations {
 	 * @throws DataAccessException
 	 */
 	ArangoDBVersion getVersion() throws DataAccessException;
+
+	DbName getDatabaseName();
 
 	/**
 	 * Performs a database query using the given {@code query} and {@code bindVars}, then returns a new

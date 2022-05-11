@@ -20,11 +20,7 @@
 
 package com.arangodb.springframework.core.template;
 
-import com.arangodb.ArangoCollection;
-import com.arangodb.ArangoCursor;
-import com.arangodb.ArangoDB;
-import com.arangodb.ArangoDBException;
-import com.arangodb.ArangoDatabase;
+import com.arangodb.*;
 import com.arangodb.entity.ArangoDBVersion;
 import com.arangodb.entity.DocumentEntity;
 import com.arangodb.entity.MultiDocumentEntity;
@@ -149,9 +145,8 @@ public class ArangoTemplate implements ArangoOperations, CollectionCallback, App
 		version = null;
 	}
 
-	private ArangoDatabase db() {
-		final String key = databaseExpression != null ? databaseExpression.getValue(context, String.class)
-				: databaseName;
+	ArangoDatabase db() {
+		final String key = getDatabaseName().get();
 		return databaseCache.computeIfAbsent(key, name -> {
 			final ArangoDatabase db = arango.db(name);
 			if (!db.exists()) {
@@ -333,6 +328,12 @@ public class ArangoTemplate implements ArangoOperations, CollectionCallback, App
 		} catch (final ArangoDBException e) {
 			throw translateExceptionIfPossible(e);
 		}
+	}
+
+	@Override
+	public DbName getDatabaseName() {
+		return DbName.of(databaseExpression != null ? databaseExpression.getValue(context, String.class)
+				: databaseName);
 	}
 
 	@Override
