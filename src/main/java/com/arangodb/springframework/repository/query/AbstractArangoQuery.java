@@ -38,7 +38,7 @@ import com.arangodb.springframework.core.ArangoOperations;
 import com.arangodb.velocypack.VPackSlice;
 
 /**
- * 
+ *
  * @author Audrius Malele
  * @author Mark McCormick
  * @author Mark Vollmary
@@ -58,7 +58,6 @@ public abstract class AbstractArangoQuery implements RepositoryQuery {
 							   final QueryTransactionBridge transactionBridge) {
 		Assert.notNull(method, "ArangoQueryMethod must not be null!");
 		Assert.notNull(operations, "ArangoOperations must not be null!");
-		Assert.notNull(transactionBridge, "QueryTransactionBridge must not be null!");
 		this.method = method;
 		this.operations = operations;
 		mappingContext = (ArangoMappingContext) operations.getConverter().getMappingContext();
@@ -81,7 +80,7 @@ public abstract class AbstractArangoQuery implements RepositoryQuery {
 		}
 
 		final Pair<String, ? extends Collection<String>> queryAndCollection = createQuery(accessor, bindVars);
-		if (options.getStreamTransactionId() == null) {
+		if (options.getStreamTransactionId() == null && transactionBridge != null) {
 			options.streamTransactionId(transactionBridge.beginCurrentTransaction(queryAndCollection.getSecond()));
 		}
 
@@ -109,7 +108,7 @@ public abstract class AbstractArangoQuery implements RepositoryQuery {
 	 * Implementations should create an AQL query with the given
 	 * {@link com.arangodb.springframework.repository.query.ArangoParameterAccessor} and set necessary binding
 	 * parameters and query options.
-	 * 
+	 *
 	 * @param accessor
 	 *            provides access to the actual arguments
 	 * @param bindVars
@@ -126,7 +125,7 @@ public abstract class AbstractArangoQuery implements RepositoryQuery {
 
 	/**
 	 * Merges AqlQueryOptions derived from @QueryOptions with dynamically passed AqlQueryOptions which takes priority
-	 * 
+	 *
 	 * @param oldStatic
 	 * @param newDynamic
 	 * @return

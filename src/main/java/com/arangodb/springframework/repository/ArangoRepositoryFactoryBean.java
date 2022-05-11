@@ -52,8 +52,8 @@ public class ArangoRepositoryFactoryBean<T extends Repository<S, ID>, S, ID>
 		this.arangoOperations = arangoOperations;
 	}
 
-	@Autowired
-	public void setArangoOperations(final QueryTransactionBridge transactionBridge) {
+	@Autowired(required = false)
+	public void setQueryTransactionBridge(final QueryTransactionBridge transactionBridge) {
 		this.transactionBridge = transactionBridge;
 	}
 
