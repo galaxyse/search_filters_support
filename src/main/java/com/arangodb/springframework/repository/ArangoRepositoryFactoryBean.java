@@ -20,6 +20,7 @@
 
 package com.arangodb.springframework.repository;
 
+import com.arangodb.springframework.repository.query.QueryTransactionBridge;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -38,6 +39,7 @@ public class ArangoRepositoryFactoryBean<T extends Repository<S, ID>, S, ID>
 		extends RepositoryFactoryBeanSupport<T, S, ID>  implements ApplicationContextAware {
 
 	private ArangoOperations arangoOperations;
+	private QueryTransactionBridge transactionBridge;
 	private ApplicationContext applicationContext;
 
 	@Autowired
@@ -50,10 +52,15 @@ public class ArangoRepositoryFactoryBean<T extends Repository<S, ID>, S, ID>
 		this.arangoOperations = arangoOperations;
 	}
 
+	@Autowired
+	public void setArangoOperations(final QueryTransactionBridge transactionBridge) {
+		this.transactionBridge = transactionBridge;
+	}
+
 	@Override
 	protected RepositoryFactorySupport createRepositoryFactory() {
 		Assert.notNull(arangoOperations, "arangoOperations not configured");
-		return new ArangoRepositoryFactory(arangoOperations, applicationContext);
+		return new ArangoRepositoryFactory(arangoOperations, transactionBridge, applicationContext);
 	}
 
 	@Override
