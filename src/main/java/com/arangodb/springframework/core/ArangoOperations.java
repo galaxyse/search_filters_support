@@ -91,8 +91,10 @@ public interface ArangoOperations {
 	 * @return cursor of the results
 	 * @throws DataAccessException
 	 */
-	<T> ArangoCursor<T> query(String query, Map<String, Object> bindVars, Class<T> entityClass)
-			throws DataAccessException;
+	default <T> ArangoCursor<T> query(String query, Map<String, Object> bindVars, Class<T> entityClass)
+			throws DataAccessException {
+		return query(query, bindVars, new AqlQueryOptions(), entityClass);
+	}
 
 	/**
 	 * Performs a database query using the given {@code query}, then returns a new {@code ArangoCursor} instance for the
@@ -120,7 +122,9 @@ public interface ArangoOperations {
 	 * @return cursor of the results
 	 * @throws DataAccessException
 	 */
-	<T> ArangoCursor<T> query(String query, Class<T> entityClass) throws DataAccessException;
+	default <T> ArangoCursor<T> query(String query, Class<T> entityClass) throws DataAccessException {
+		return query(query, new AqlQueryOptions(), entityClass);
+	}
 
 	/**
 	 * Deletes multiple documents from a collection.
@@ -149,8 +153,10 @@ public interface ArangoOperations {
 	 * @return information about the documents
 	 * @throws DataAccessException
 	 */
-	MultiDocumentEntity<? extends DocumentEntity> delete(Iterable<Object> values, Class<?> entityClass)
-			throws DataAccessException;
+	default MultiDocumentEntity<? extends DocumentEntity> delete(Iterable<Object> values, Class<?> entityClass)
+			throws DataAccessException {
+		return delete(values, entityClass, new DocumentDeleteOptions());
+	}
 
 	/**
 	 * Deletes the document with the given {@code id} from a collection.
@@ -176,7 +182,9 @@ public interface ArangoOperations {
 	 * @return information about the document
 	 * @throws DataAccessException
 	 */
-	DocumentEntity delete(Object id, Class<?> entityClass) throws DataAccessException;
+	default DocumentEntity delete(Object id, Class<?> entityClass) throws DataAccessException {
+		return delete(id, entityClass, new DocumentDeleteOptions());
+	}
 
 	/**
 	 * Partially updates documents, the documents to update are specified by the _key attributes in the objects on
@@ -215,8 +223,10 @@ public interface ArangoOperations {
 	 * @return information about the documents
 	 * @throws DataAccessException
 	 */
-	<T> MultiDocumentEntity<? extends DocumentEntity> update(Iterable<T> values, Class<T> entityClass)
-			throws DataAccessException;
+	default <T> MultiDocumentEntity<? extends DocumentEntity> update(Iterable<T> values, Class<T> entityClass)
+			throws DataAccessException {
+		return update(values, entityClass, new DocumentUpdateOptions());
+	}
 
 	/**
 	 * Partially updates the document identified by document id or key. The value must contain a document with the
@@ -246,7 +256,9 @@ public interface ArangoOperations {
 	 * @return information about the document
 	 * @throws DataAccessException
 	 */
-	<T> DocumentEntity update(Object id, T value) throws DataAccessException;
+	default <T> DocumentEntity update(Object id, T value) throws DataAccessException {
+		return update(id, value, new DocumentUpdateOptions());
+	}
 
 	/**
 	 * Replaces multiple documents in the specified collection with the ones in the values, the replaced documents are
@@ -278,13 +290,13 @@ public interface ArangoOperations {
 	 *            A List of documents
 	 * @param entityClass
 	 *            The entity class which represents the collection
-	 * @param options
-	 *            Additional options, can be null
 	 * @return information about the documents
 	 * @throws DataAccessException
 	 */
-	<T> MultiDocumentEntity<? extends DocumentEntity> replace(Iterable<T> values, Class<T> entityClass)
-			throws DataAccessException;
+	default <T> MultiDocumentEntity<? extends DocumentEntity> replace(Iterable<T> values, Class<T> entityClass)
+			throws DataAccessException {
+		return replace(values, entityClass, new DocumentReplaceOptions());
+	}
 
 	/**
 	 * Replaces the document with {@code id} with the one in the body, provided there is such a document and no
@@ -312,7 +324,9 @@ public interface ArangoOperations {
 	 * @return information about the document
 	 * @throws DataAccessException
 	 */
-	<T> DocumentEntity replace(Object id, T value) throws DataAccessException;
+	default <T> DocumentEntity replace(Object id, T value) throws DataAccessException {
+		return replace(id, value, new DocumentReplaceOptions());
+	}
 
 	/**
 	 * Retrieves the document with the given {@code id} from a collection.
@@ -338,7 +352,9 @@ public interface ArangoOperations {
 	 * @return the document identified by the id
 	 * @throws DataAccessException
 	 */
-	<T> Optional<T> find(Object id, Class<T> entityClass) throws DataAccessException;
+	default <T> Optional<T> find(Object id, Class<T> entityClass) throws DataAccessException {
+		return find(id, entityClass, new DocumentReadOptions());
+	}
 
 	/**
 	 * Retrieves all documents from a collection.
@@ -348,7 +364,11 @@ public interface ArangoOperations {
 	 * @return the documents
 	 * @throws DataAccessException
 	 */
-	<T> Iterable<T> findAll(Class<T> entityClass) throws DataAccessException;
+	<T> Iterable<T> findAll(Class<T> entityClass, DocumentReadOptions options) throws DataAccessException;
+
+	default <T> Iterable<T> findAll(Class<T> entityClass) throws DataAccessException {
+		return findAll(entityClass, new DocumentReadOptions());
+	}
 
 	/**
 	 * Retrieves multiple documents with the given {@code ids} from a collection.
@@ -360,7 +380,11 @@ public interface ArangoOperations {
 	 * @return the documents
 	 * @throws DataAccessException
 	 */
-	<T> Iterable<T> find(final Iterable<? extends Object> ids, final Class<T> entityClass) throws DataAccessException;
+	<T> Iterable<T> find(final Iterable<? extends Object> ids, final Class<T> entityClass, DocumentReadOptions options) throws DataAccessException;
+
+	default <T> Iterable<T> find(final Iterable<? extends Object> ids, final Class<T> entityClass) throws DataAccessException {
+		return find(ids, entityClass, new DocumentReadOptions());
+	}
 
 	/**
 	 * Creates new documents from the given documents, unless there is already a document with the _key given. If no
@@ -395,8 +419,10 @@ public interface ArangoOperations {
 	 * @return information about the documents
 	 * @throws DataAccessException
 	 */
-	<T> MultiDocumentEntity<? extends DocumentEntity> insert(Iterable<T> values, Class<T> entityClass)
-			throws DataAccessException;
+	default <T> MultiDocumentEntity<? extends DocumentEntity> insert(Iterable<T> values, Class<T> entityClass)
+			throws DataAccessException {
+		return insert(values, entityClass, new DocumentCreateOptions());
+	}
 
 	/**
 	 * Creates a new document from the given document, unless there is already a document with the _key given. If no
@@ -418,7 +444,9 @@ public interface ArangoOperations {
 	 *            A representation of a single document
 	 * @return information about the document
 	 */
-	<T> DocumentEntity insert(T value) throws DataAccessException;
+	default <T> DocumentEntity insert(T value) throws DataAccessException {
+		return insert(value, new DocumentCreateOptions());
+	}
 
 	/**
 	 * Creates a new document from the given document, unless there is already a document with the _key given. If no
@@ -448,7 +476,9 @@ public interface ArangoOperations {
 	 * @return information about the document
 	 * @throws DataAccessException
 	 */
-	DocumentEntity insert(String collectionName, Object value) throws DataAccessException;
+	default DocumentEntity insert(String collectionName, Object value) throws DataAccessException {
+		return insert(collectionName, value, new DocumentCreateOptions());
+	}
 
 	public enum UpsertStrategy {
 		REPLACE, UPDATE
@@ -472,7 +502,7 @@ public interface ArangoOperations {
 	 * Creates new documents from the given documents, unless there already exists. In that case it updates or replaces
 	 * the documents, depending on the chosen strategy.
 	 *
-	 * @deprecated use {@link #repsert(Iterable)} instead
+	 * @deprecated use {@link #repsert(Iterable, Class)} instead
 	 * @param value
 	 *            A List of documents
 	 * @param strategy
@@ -491,7 +521,11 @@ public interface ArangoOperations {
 	 * @throws DataAccessException
 	 * @since ArangoDB 3.4
 	 */
-	<T> void repsert(T value) throws DataAccessException;
+	<T> void repsert(T value, AqlQueryOptions options) throws DataAccessException;
+
+	default <T> void repsert(T value) throws DataAccessException {
+		repsert(value, new AqlQueryOptions());
+	}
 
 	/**
 	 * Creates new documents from the given documents, unless there already exists. In that case it replaces the
@@ -504,7 +538,11 @@ public interface ArangoOperations {
 	 * @throws DataAccessException
 	 * @since ArangoDB 3.4
 	 */
-	<T> void repsert(Iterable<? extends T> values, Class<T> entityClass) throws DataAccessException;
+	<T> void repsert(Iterable<? extends T> values, Class<T> entityClass, AqlQueryOptions options) throws DataAccessException;
+
+	default <T> void repsert(Iterable<? extends T> values, Class<T> entityClass) throws DataAccessException {
+		repsert(values, entityClass, new AqlQueryOptions());
+	}
 
 	/**
 	 * Checks whether the document exists by reading a single document head
@@ -516,7 +554,11 @@ public interface ArangoOperations {
 	 * @return true if the document exists, false if not
 	 * @throws DataAccessException
 	 */
-	boolean exists(Object id, Class<?> entityClass) throws DataAccessException;
+	boolean exists(Object id, Class<?> entityClass, DocumentExistsOptions options) throws DataAccessException;
+
+	default boolean exists(Object id, Class<?> entityClass) throws DataAccessException {
+		return exists(id, entityClass, new DocumentExistsOptions());
+	}
 
 	/**
 	 * Drop an existing database
@@ -545,7 +587,9 @@ public interface ArangoOperations {
 	 * @return {@link CollectionOperations}
 	 * @throws DataAccessException
 	 */
-	CollectionOperations collection(String name) throws DataAccessException;
+	default CollectionOperations collection(String name) throws DataAccessException {
+		return collection(name, new CollectionCreateOptions());
+	}
 
 	/**
 	 * Returns the operations interface for a collection. If the collection does not exists, it is created
