@@ -80,7 +80,7 @@ public class ArangoRepositoryFactory extends RepositoryFactorySupport {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	protected Object getTargetRepository(final RepositoryInformation metadata) {
-		return new SimpleArangoRepository(arangoOperations, metadata.getDomainType());
+		return new SimpleArangoRepository(arangoOperations, metadata.getDomainType(), transactionBridge);
 	}
 
 	@Override
