@@ -100,7 +100,7 @@ public class RelationsResolver extends AbstractResolver<Relations> implements Re
 				edges, //
 				limit ? "LIMIT 1" : "");
 
-		return template.query(query, bindVars.get(), type);
+		return template.query(query, bindVars.get(), defaultQueryOptions(), type);
 	}
 
 }

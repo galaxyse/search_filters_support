@@ -23,7 +23,6 @@ package com.arangodb.springframework.core.convert.resolver;
 import org.springframework.data.util.TypeInformation;
 
 import com.arangodb.ArangoCursor;
-import com.arangodb.model.AqlQueryOptions;
 import com.arangodb.springframework.annotation.From;
 import com.arangodb.springframework.core.ArangoOperations;
 import com.arangodb.util.MapBuilder;
@@ -63,8 +62,8 @@ public class DocumentFromResolver extends AbstractResolver<From> implements Rela
 
 	private ArangoCursor<?> _resolve(final String id, final Class<?> type, final boolean limit) {
 		final String query = String.format("FOR e IN @@edge FILTER e._from == @id %s RETURN e", limit ? "LIMIT 1" : "");
-		return template.query(query, new MapBuilder().put("@edge", type).put("id", id).get(), new AqlQueryOptions(),
-			type);
+		return template.query(query, new MapBuilder().put("@edge", type).put("id", id).get(),
+				defaultQueryOptions(), type);
 	}
 
 }

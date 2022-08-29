@@ -55,7 +55,7 @@ public class RefResolver extends AbstractResolver<Ref>
 
 	@Override
 	public Object resolve(final String id, final TypeInformation<?> type, final Ref annotation) {
-		return template.find(id, type.getType()).get();
+		return template.find(id, type.getType(), defaultReadOptions()).get();
 	}
 
 	@Override

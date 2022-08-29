@@ -43,7 +43,7 @@ public class EdgeFromResolver extends AbstractResolver<From> implements Relation
 	}
 
 	private Object _resolveOne(final String id, final TypeInformation<?> type) {
-		return template.find(id, type.getType()).get();
+		return template.find(id, type.getType(), defaultReadOptions()).get();
 	}
 
 	@Override
