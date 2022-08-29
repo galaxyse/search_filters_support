@@ -37,11 +37,8 @@ import java.util.Collection;
  */
 public class DocumentFromResolver extends AbstractResolver<From> implements RelationResolver<From> {
 
-	private final ArangoOperations template;
-
 	public DocumentFromResolver(final ArangoOperations template) {
-		super(template.getConverter().getConversionService());
-		this.template = template;
+		super(template);
 	}
 
 	@Override

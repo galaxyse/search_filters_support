@@ -37,11 +37,8 @@ import com.arangodb.util.MapBuilder;
  */
 public class RelationsResolver extends AbstractResolver<Relations> implements RelationResolver<Relations> {
 
-	private final ArangoOperations template;
-
 	public RelationsResolver(final ArangoOperations template) {
-		super(template.getConverter().getConversionService());
-		this.template = template;
+		super(template);
 	}
 
 	@Override
