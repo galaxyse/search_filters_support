@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.query.ResultProcessor;
-import org.springframework.data.util.Pair;
 import org.springframework.util.Assert;
 
 import com.arangodb.ArangoCursor;
@@ -79,16 +78,16 @@ public abstract class AbstractArangoQuery implements RepositoryQuery {
 			options.fullCount(true);
 		}
 
-		final Pair<String, ? extends Collection<String>> queryAndCollection = createQuery(accessor, bindVars);
+		final QueryWithCollections queryAndCollection = createQuery(accessor, bindVars);
 		if (options.getStreamTransactionId() == null && transactionBridge != null) {
-			options.streamTransactionId(transactionBridge.getCurrentTransaction(queryAndCollection.getSecond()));
+			options.streamTransactionId(transactionBridge.getCurrentTransaction(queryAndCollection.getCollections()));
 		}
 
 
 		final ResultProcessor processor = method.getResultProcessor().withDynamicProjection(accessor);
 		final Class<?> typeToRead = getTypeToRead(processor);
 
-		final ArangoCursor<?> result = operations.query(queryAndCollection.getFirst(), bindVars, options, typeToRead);
+		final ArangoCursor<?> result = operations.query(queryAndCollection.getQuery(), bindVars, options, typeToRead);
 		logWarningsIfNecessary(result);
 		return processor.processResult(convertResult(result, accessor));
 	}
@@ -115,7 +114,7 @@ public abstract class AbstractArangoQuery implements RepositoryQuery {
 	 *            the binding parameter map
 	 * @return a pair of the created AQL query and all collection names
 	 */
-	protected abstract Pair<String, ? extends Collection<String>> createQuery(
+	protected abstract QueryWithCollections createQuery(
 			ArangoParameterAccessor accessor,
 			Map<String, Object> bindVars);
 
