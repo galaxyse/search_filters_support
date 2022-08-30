@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+- added support for transactions offering a platform transaction manager based on stream transactions (#80)
 
 ## [3.7.1] - 2022-08-19
 
