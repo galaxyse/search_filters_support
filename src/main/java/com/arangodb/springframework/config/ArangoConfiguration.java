@@ -88,9 +88,7 @@ public interface ArangoConfiguration {
 
 	@Bean
 	default ResolverFactory resolverFactory() {
-		return RESOLVER_FACTORY_INSTANCE;
+		return new DefaultResolverFactory();
 	}
-
-	ResolverFactory RESOLVER_FACTORY_INSTANCE = new DefaultResolverFactory();
 
 }
