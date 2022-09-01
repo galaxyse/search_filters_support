@@ -187,16 +187,16 @@ public class ArangoTemplate implements ArangoOperations, CollectionCallback, App
 
 	private static void ensureCollectionIndexes(final CollectionOperations collection,
 			final ArangoPersistentEntity<?> persistentEntity) {
-		persistentEntity.getHashIndexes().stream().forEach(index -> ensureHashIndex(collection, index));
-		persistentEntity.getHashIndexedProperties().stream().forEach(p -> ensureHashIndex(collection, p));
-		persistentEntity.getSkiplistIndexes().stream().forEach(index -> ensureSkiplistIndex(collection, index));
-		persistentEntity.getSkiplistIndexedProperties().stream().forEach(p -> ensureSkiplistIndex(collection, p));
-		persistentEntity.getPersistentIndexes().stream().forEach(index -> ensurePersistentIndex(collection, index));
-		persistentEntity.getPersistentIndexedProperties().stream().forEach(p -> ensurePersistentIndex(collection, p));
-		persistentEntity.getGeoIndexes().stream().forEach(index -> ensureGeoIndex(collection, index));
-		persistentEntity.getGeoIndexedProperties().stream().forEach(p -> ensureGeoIndex(collection, p));
-		persistentEntity.getFulltextIndexes().stream().forEach(index -> ensureFulltextIndex(collection, index));
-		persistentEntity.getFulltextIndexedProperties().stream().forEach(p -> ensureFulltextIndex(collection, p));
+		persistentEntity.getHashIndexes().forEach(index -> ensureHashIndex(collection, index));
+		persistentEntity.getHashIndexedProperties().forEach(p -> ensureHashIndex(collection, p));
+		persistentEntity.getSkiplistIndexes().forEach(index -> ensureSkiplistIndex(collection, index));
+		persistentEntity.getSkiplistIndexedProperties().forEach(p -> ensureSkiplistIndex(collection, p));
+		persistentEntity.getPersistentIndexes().forEach(index -> ensurePersistentIndex(collection, index));
+		persistentEntity.getPersistentIndexedProperties().forEach(p -> ensurePersistentIndex(collection, p));
+		persistentEntity.getGeoIndexes().forEach(index -> ensureGeoIndex(collection, index));
+		persistentEntity.getGeoIndexedProperties().forEach(p -> ensureGeoIndex(collection, p));
+		persistentEntity.getFulltextIndexes().forEach(index -> ensureFulltextIndex(collection, index));
+		persistentEntity.getFulltextIndexedProperties().forEach(p -> ensureFulltextIndex(collection, p));
 		persistentEntity.getTtlIndex().ifPresent(index -> ensureTtlIndex(collection, index));
 		persistentEntity.getTtlIndexedProperty().ifPresent(p -> ensureTtlIndex(collection, p));
 	}
@@ -322,12 +322,6 @@ public class ArangoTemplate implements ArangoOperations, CollectionCallback, App
 	public DbName getDatabaseName() {
 		return DbName.of(databaseExpression != null ? databaseExpression.getValue(context, String.class)
 				: databaseName);
-	}
-
-	@Override
-	public <T> ArangoCursor<T> query(final String query, final AqlQueryOptions options, final Class<T> entityClass)
-			throws DataAccessException {
-		return query(query, null, options, entityClass);
 	}
 
 	@Override
@@ -475,7 +469,7 @@ public class ArangoTemplate implements ArangoOperations, CollectionCallback, App
 	}
 
 	@Override
-	public <T> Iterable<T> find(final Iterable<? extends Object> ids, final Class<T> entityClass, DocumentReadOptions options)
+	public <T> Iterable<T> find(final Iterable<?> ids, final Class<T> entityClass, DocumentReadOptions options)
 			throws DataAccessException {
 		try {
 			final Collection<String> keys = new ArrayList<>();
@@ -513,7 +507,7 @@ public class ArangoTemplate implements ArangoOperations, CollectionCallback, App
 		try {
 			result = _collection(value.getClass()).insertDocument(toVPack(value), options);
 		} catch (final ArangoDBException e) {
-			throw exceptionTranslator.translateExceptionIfPossible(e);
+			throw translateExceptionIfPossible(e);
 		}
 
 		updateDBFields(value, result);
@@ -530,7 +524,7 @@ public class ArangoTemplate implements ArangoOperations, CollectionCallback, App
 		try {
 			result = _collection(collectionName).insertDocument(toVPack(value), options);
 		} catch (final ArangoDBException e) {
-			throw exceptionTranslator.translateExceptionIfPossible(e);
+			throw translateExceptionIfPossible(e);
 		}
 
 		updateDBFields(value, result);
@@ -551,7 +545,7 @@ public class ArangoTemplate implements ArangoOperations, CollectionCallback, App
 
 	@Override
 	public <T> void upsert(final T value, final UpsertStrategy strategy) throws DataAccessException {
-		final Class<? extends Object> entityClass = value.getClass();
+		final Class<?> entityClass = value.getClass();
 		final ArangoPersistentEntity<?> entity = getConverter().getMappingContext().getPersistentEntity(entityClass);
 
 		final Object id = getDocumentKey(entity, value);
@@ -570,13 +564,13 @@ public class ArangoTemplate implements ArangoOperations, CollectionCallback, App
 		insert(value);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T> void upsert(final Iterable<T> value, final UpsertStrategy strategy) throws DataAccessException {
 		final Optional<T> first = StreamSupport.stream(value.spliterator(), false).findFirst();
 		if (!first.isPresent()) {
 			return;
 		}
+		@SuppressWarnings("unchecked")
 		final Class<T> entityClass = (Class<T>) first.get().getClass();
 		final ArangoPersistentEntity<?> entity = getConverter().getMappingContext().getPersistentEntity(entityClass);
 
@@ -624,7 +618,7 @@ public class ArangoTemplate implements ArangoOperations, CollectionCallback, App
 					options, clazz
 			).first();
 		} catch (final ArangoDBException e) {
-			throw exceptionTranslator.translateExceptionIfPossible(e);
+			throw translateExceptionIfPossible(e);
 		}
 
 		updateDBFieldsFromObject(value, result);
@@ -698,12 +692,12 @@ public class ArangoTemplate implements ArangoOperations, CollectionCallback, App
 		final Iterator<T> valueIterator = values.iterator();
 		if (res.getErrors().isEmpty()) {
 			final Iterator<? extends DocumentEntity> documentIterator = res.getDocuments().iterator();
-			for (; valueIterator.hasNext() && documentIterator.hasNext();) {
+			while (valueIterator.hasNext() && documentIterator.hasNext()) {
 				updateDBFields(valueIterator.next(), documentIterator.next());
 			}
 		} else {
 			final Iterator<Object> documentIterator = res.getDocumentsAndErrors().iterator();
-			for (; valueIterator.hasNext() && documentIterator.hasNext();) {
+			while (valueIterator.hasNext() && documentIterator.hasNext()) {
 				final Object nextDoc = documentIterator.next();
 				final Object nextValue = valueIterator.next();
 				if (nextDoc instanceof DocumentEntity) {
@@ -745,7 +739,7 @@ public class ArangoTemplate implements ArangoOperations, CollectionCallback, App
 		}
 		databaseCache.remove(db.name());
 		collectionCache.keySet().stream().filter(key -> key.getDb().equals(db.name()))
-				.forEach(key -> collectionCache.remove(key));
+				.forEach(collectionCache::remove);
 	}
 
 	@Override
