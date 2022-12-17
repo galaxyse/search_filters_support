@@ -345,7 +345,7 @@ public class SimpleArangoRepository<T, ID> implements ArangoRepository<T, ID> {
 				buildFilterClause(example, bindVars), buildPageableClause(pageable, "e"));
 		arangoOperations.collection(domainClass);
 		AqlQueryOptions options = Optional.ofNullable(pageable)
-				.map(pageable1 -> new AqlQueryOptions().fullCount(true))
+				.map(mappedPageable -> new AqlQueryOptions().fullCount(true))
 				.orElse(null);
 		return arangoOperations.query(query, bindVars, options, domainClass);
 	}
@@ -364,7 +364,7 @@ public class SimpleArangoRepository<T, ID> implements ArangoRepository<T, ID> {
         Sort persistentSort = AqlUtils.toPersistentSort(pageable.getSort(), mappingContext, domainClass);
 		Pageable persistentPageable = Optional.of(pageable)
 				.filter(Pageable::isPaged)
-				.map(pageable1 -> PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), persistentSort))
+				.map(mappedPageable -> PageRequest.of(mappedPageable.getPageNumber(), mappedPageable.getPageSize(), persistentSort))
 				.map(pageRequest -> (Pageable)pageRequest)
 				.orElse(pageable);
         return AqlUtils.buildPageableClause(persistentPageable, varName);
