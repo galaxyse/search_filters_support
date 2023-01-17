@@ -8,7 +8,6 @@ import com.arangodb.entity.StreamTransactionStatus;
 import com.arangodb.model.StreamTransactionOptions;
 import com.arangodb.model.TransactionCollectionOptions;
 import com.arangodb.springframework.core.ArangoOperations;
-import com.arangodb.springframework.repository.query.QueryTransactionBridge;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,9 +24,7 @@ import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.function.Function;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -60,7 +57,7 @@ public class ArangoTransactionManagerTest {
     @Mock
     private StreamTransactionEntity streamTransaction;
     @Captor
-    private ArgumentCaptor<Function<Collection<String>, String>> beginPassed;
+    private ArgumentCaptor<ArangoTransactionObject> beginPassed;
     @Captor
     private ArgumentCaptor<StreamTransactionOptions> optionsPassed;
 
@@ -165,7 +162,7 @@ public class ArangoTransactionManagerTest {
         definition.setTimeout(20);
         underTest.getTransaction(definition);
         beginTransaction("123", "foo");
-        beginPassed.getValue().apply(Arrays.asList("foo", "baz"));
+        beginPassed.getValue().getOrBegin(Arrays.asList("foo", "baz"));
         verify(database).beginStreamTransaction(optionsPassed.capture());
         TransactionCollectionOptions collections = getCollections(optionsPassed.getValue());
         assertThat(collections.getWrite(), hasItems("baz", "foo"));
@@ -178,7 +175,7 @@ public class ArangoTransactionManagerTest {
         definition.setTimeout(20);
         TransactionStatus state = underTest.getTransaction(definition);
         beginTransaction("123", "foo");
-        beginPassed.getValue().apply(Collections.singletonList("baz"));
+        beginPassed.getValue().getOrBegin(Collections.singletonList("baz"));
         assertThat(getTransactionObject(state).getResource().getCollectionNames(), hasItems("foo", "bar"));
         assertThat(getTransactionObject(state).getResource().getCollectionNames(), not(hasItem("baz")));
     }
@@ -200,7 +197,7 @@ public class ArangoTransactionManagerTest {
         when(streamTransaction.getStatus())
                 .thenReturn(StreamTransactionStatus.running);
         verify(bridge).setCurrentTransaction(beginPassed.capture());
-        beginPassed.getValue().apply(Arrays.asList(collectionNames));
+        beginPassed.getValue().getOrBegin(Arrays.asList(collectionNames));
     }
 
     @Nullable

@@ -25,6 +25,7 @@ import com.arangodb.entity.IndexType;
 import com.arangodb.springframework.core.ArangoOperations;
 import com.arangodb.springframework.repository.query.derived.BindParameterBinding;
 import com.arangodb.springframework.repository.query.derived.DerivedQueryCreator;
+import com.arangodb.springframework.transaction.QueryTransactionBridge;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.data.util.Pair;
 

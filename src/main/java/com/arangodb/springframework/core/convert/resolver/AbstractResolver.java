@@ -28,7 +28,7 @@ import java.util.Collections;
 import com.arangodb.model.AqlQueryOptions;
 import com.arangodb.model.DocumentReadOptions;
 import com.arangodb.springframework.core.ArangoOperations;
-import com.arangodb.springframework.repository.query.QueryTransactionBridge;
+import com.arangodb.springframework.transaction.QueryTransactionBridge;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.cglib.proxy.Callback;

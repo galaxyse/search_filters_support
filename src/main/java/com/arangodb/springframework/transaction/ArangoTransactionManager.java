@@ -25,7 +25,6 @@ import com.arangodb.ArangoDatabase;
 import com.arangodb.DbName;
 import com.arangodb.model.StreamTransactionOptions;
 import com.arangodb.springframework.core.ArangoOperations;
-import com.arangodb.springframework.repository.query.QueryTransactionBridge;
 import org.springframework.transaction.*;
 import org.springframework.transaction.support.AbstractPlatformTransactionManager;
 import org.springframework.transaction.support.DefaultTransactionStatus;
@@ -78,13 +77,7 @@ public class ArangoTransactionManager extends AbstractPlatformTransactionManager
         }
         ArangoTransactionObject tx = (ArangoTransactionObject) transaction;
         tx.configure(definition);
-        bridge.setCurrentTransaction(collections -> {
-            try {
-                return tx.getOrBegin(collections).getStreamTransactionId();
-            } catch (ArangoDBException error) {
-                throw new TransactionSystemException("Cannot begin transaction", error);
-            }
-        });
+        bridge.setCurrentTransaction(tx);
     }
 
     /**

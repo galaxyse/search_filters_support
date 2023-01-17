@@ -35,7 +35,8 @@ import com.arangodb.springframework.annotation.Ref;
 import com.arangodb.springframework.annotation.Relations;
 import com.arangodb.springframework.annotation.To;
 import com.arangodb.springframework.core.ArangoOperations;
-import com.arangodb.springframework.repository.query.QueryTransactionBridge;
+import com.arangodb.springframework.transaction.QueryTransactionBridge;
+
 
 public class DefaultResolverFactory implements ResolverFactory, ApplicationContextAware {
 

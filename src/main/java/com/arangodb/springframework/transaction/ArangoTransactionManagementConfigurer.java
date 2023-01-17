@@ -26,7 +26,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 
 import com.arangodb.springframework.core.ArangoOperations;
-import com.arangodb.springframework.repository.query.QueryTransactionBridge;
 
 /**
  * To enable stream transactions for Arango Spring Data, create a

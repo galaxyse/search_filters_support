@@ -28,7 +28,7 @@ import com.arangodb.model.DocumentReadOptions;
 import com.arangodb.springframework.core.ArangoOperations;
 import com.arangodb.springframework.core.mapping.ArangoMappingContext;
 import com.arangodb.springframework.core.util.AqlUtils;
-import com.arangodb.springframework.repository.query.QueryTransactionBridge;
+import com.arangodb.springframework.transaction.QueryTransactionBridge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;

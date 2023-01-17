@@ -20,7 +20,7 @@
 
 package com.arangodb.springframework.repository;
 
-import com.arangodb.springframework.repository.query.QueryTransactionBridge;
+import com.arangodb.springframework.transaction.QueryTransactionBridge;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

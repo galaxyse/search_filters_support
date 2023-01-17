@@ -18,33 +18,38 @@
  * Copyright holder is ArangoDB GmbH, Cologne, Germany
  */
 
-package com.arangodb.springframework.repository.query;
+package com.arangodb.springframework.transaction;
 
+import com.arangodb.ArangoDBException;
 import org.springframework.core.NamedInheritableThreadLocal;
+import org.springframework.transaction.TransactionSystemException;
 
 import java.util.Collection;
-import java.util.function.Function;
 
 /**
  * Bridge to postpone late transaction start to be able to inject collections from query side.
  */
 public class QueryTransactionBridge {
-    private static final Function<Collection<String>, String> NO_TRANSACTION = any -> null;
-    private static final ThreadLocal<Function<Collection<String>, String>> CURRENT_TRANSACTION = new NamedInheritableThreadLocal<>("ArangoTransactionBegin");
+    private static final ThreadLocal<ArangoTransactionObject> CURRENT_TRANSACTION = new NamedInheritableThreadLocal<>("ArangoTransactionBegin");
 
-    public QueryTransactionBridge() {
-        CURRENT_TRANSACTION.set(NO_TRANSACTION);
-    }
-
-    public void setCurrentTransaction(Function<Collection<String>, String> begin) {
-        CURRENT_TRANSACTION.set(begin);
+    public void setCurrentTransaction(ArangoTransactionObject transactionObject) {
+        CURRENT_TRANSACTION.set(transactionObject);
     }
 
     public void clearCurrentTransaction() {
-        CURRENT_TRANSACTION.set(NO_TRANSACTION);
+        CURRENT_TRANSACTION.remove();
     }
 
     public String getCurrentTransaction(Collection<String> collections) {
-        return CURRENT_TRANSACTION.get().apply(collections);
+        ArangoTransactionObject tx = CURRENT_TRANSACTION.get();
+        if (tx == null) {
+            return null;
+        }
+
+        try {
+            return tx.getOrBegin(collections).getStreamTransactionId();
+        } catch (ArangoDBException error) {
+            throw new TransactionSystemException("Cannot begin transaction", error);
+        }
     }
 }

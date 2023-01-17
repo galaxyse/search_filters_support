@@ -23,7 +23,7 @@ package com.arangodb.springframework.repository;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-import com.arangodb.springframework.repository.query.QueryTransactionBridge;
+import com.arangodb.springframework.transaction.QueryTransactionBridge;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.projection.ProjectionFactory;

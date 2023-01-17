@@ -23,7 +23,7 @@ package com.arangodb.springframework.core.convert.resolver;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.arangodb.springframework.repository.query.QueryTransactionBridge;
+import com.arangodb.springframework.transaction.QueryTransactionBridge;
 import org.springframework.data.util.TypeInformation;
 
 import com.arangodb.ArangoCursor;

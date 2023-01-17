@@ -20,7 +20,7 @@
 
 package com.arangodb.springframework.core.convert.resolver;
 
-import com.arangodb.springframework.repository.query.QueryTransactionBridge;
+import com.arangodb.springframework.transaction.QueryTransactionBridge;
 import org.springframework.data.util.TypeInformation;
 
 import com.arangodb.springframework.annotation.To;

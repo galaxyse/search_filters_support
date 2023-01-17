@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 import com.arangodb.springframework.core.mapping.ArangoPersistentEntity;
 import com.arangodb.springframework.core.util.MetadataUtils;
-import com.arangodb.springframework.repository.query.QueryTransactionBridge;
+import com.arangodb.springframework.transaction.QueryTransactionBridge;
 import org.springframework.data.util.TypeInformation;
 
 import com.arangodb.springframework.annotation.Ref;

@@ -25,6 +25,7 @@ import com.arangodb.springframework.annotation.Edge;
 import com.arangodb.springframework.core.ArangoOperations;
 import com.arangodb.springframework.core.util.AqlUtils;
 import com.arangodb.springframework.repository.query.ArangoParameters.ArangoParameter;
+import com.arangodb.springframework.transaction.QueryTransactionBridge;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.expression.BeanFactoryAccessor;
 import org.springframework.context.expression.BeanFactoryResolver;
