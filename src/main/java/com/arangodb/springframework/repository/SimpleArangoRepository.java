@@ -344,10 +344,8 @@ public class SimpleArangoRepository<T, ID> implements ArangoRepository<T, ID> {
 		final String query = String.format("FOR e IN @@col %s %s RETURN e",
 				buildFilterClause(example, bindVars), buildPageableClause(pageable, "e"));
 		arangoOperations.collection(domainClass);
-		AqlQueryOptions options = Optional.ofNullable(pageable)
-				.map(mappedPageable -> new AqlQueryOptions().fullCount(true))
-				.orElse(null);
-		return arangoOperations.query(query, bindVars, options, domainClass);
+		return arangoOperations.query(query, bindVars,
+				pageable != null ? new AqlQueryOptions().fullCount(true) : null, domainClass);
 	}
 
 	private <S extends T> String buildFilterClause(final Example<S> example, final Map<String, Object> bindVars) {
@@ -362,12 +360,13 @@ public class SimpleArangoRepository<T, ID> implements ArangoRepository<T, ID> {
     private String buildPageableClause(final Pageable pageable, final String varName) {
         if (pageable == null) return "";
         Sort persistentSort = AqlUtils.toPersistentSort(pageable.getSort(), mappingContext, domainClass);
-		Pageable persistentPageable = Optional.of(pageable)
-				.filter(Pageable::isPaged)
-				.map(mappedPageable -> PageRequest.of(mappedPageable.getPageNumber(), mappedPageable.getPageSize(), persistentSort))
-				.map(pageRequest -> (Pageable)pageRequest)
-				.orElse(pageable);
-        return AqlUtils.buildPageableClause(persistentPageable, varName);
+		Pageable persistentPageable;
+		if (pageable.isPaged()) {
+			persistentPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), persistentSort);
+		} else {
+			persistentPageable = pageable;
+		}
+		return AqlUtils.buildPageableClause(persistentPageable, varName);
     }
 
     private String buildSortClause(final Sort sort, final String varName) {
